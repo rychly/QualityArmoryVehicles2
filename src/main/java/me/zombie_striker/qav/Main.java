@@ -20,6 +20,8 @@ import me.zombie_striker.qav.finput.*;
 import me.zombie_striker.qav.finput.inputs.*;
 import me.zombie_striker.qav.fuel.FuelItemStack;
 import me.zombie_striker.qav.fuel.RepairItemStack;
+import me.zombie_striker.qav.hooks.QualityArmoryListener;
+import me.zombie_striker.qav.hooks.implementation.WorldGuardHook;
 import me.zombie_striker.qav.hooks.model.ModelEngineHook;
 import me.zombie_striker.qav.hooks.ProtectionHandler;
 import me.zombie_striker.qav.hooks.QuickShopHook;
@@ -56,7 +58,7 @@ public class Main extends JavaPlugin {
 	public static boolean debug = false;
 	public static boolean verboseLogging = false;
 
-	public static String prefix = "&6[QA-Vehicles]&f";
+	public static String prefix = "&6&lQAVehicles &f&l»&7";
 
 	public static QAMini minihandler = null;// = new QAMini();
 
@@ -137,6 +139,14 @@ public class Main extends JavaPlugin {
 
 	public static boolean isVersionHigherThan(int first, int second) {
 		return QAMini.isVersionHigherThan(first, second);
+	}
+
+	@Override
+	public void onLoad() {
+		try {
+			if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null)
+				WorldGuardHook.register();
+		} catch (Error | Exception ignored) {}
 	}
 
 	@Override
@@ -338,6 +348,10 @@ public class Main extends JavaPlugin {
 		} else {
 			Plugin qa = Bukkit.getPluginManager().getPlugin("QualityArmory");
 			QAMini.verboseLogging = qa.getConfig().getBoolean("verboseItemLogging");
+			try {
+				this.getServer().getPluginManager().registerEvents(new QualityArmoryListener(), this);
+			} catch (Error | Exception ignored) {
+			}
 		}
 
 		items = new File(this.getDataFolder(), "items");
